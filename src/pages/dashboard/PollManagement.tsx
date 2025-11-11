@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { PlusCircle, Trophy, Calendar, TrendingUp, BarChart3, Sparkles } from "lucide-react";
-import ManageDishModal from "../../components/dashboard/ManageDishModal";
+// import ManageDishModal from "../../components/dashboard/ManageDishModal";
 import CreatePollModal from "../../components/dashboard/CreatePollModal";
 import ManageActivePollModal from "../../components/dashboard/ManageActivePollModal";
 import PollDetailsModal from "../../components/dashboard/PollDetailsModal";

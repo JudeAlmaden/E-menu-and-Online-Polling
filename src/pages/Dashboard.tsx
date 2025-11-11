@@ -73,6 +73,7 @@ export default function Dashboard() {
     setMenu(updatedMenu);
   };
 
+  console.log(user);
   return (
     <DashboardLayout>
       <Routes>

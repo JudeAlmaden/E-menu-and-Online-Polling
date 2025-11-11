@@ -17,7 +17,7 @@ export default function ManageActivePollModal({
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [ending, setEnding] = useState(false);
-  const [deleting, setDeleting] = useState(false);
+  // const [deleting, setDeleting] = useState(false);
   const isFetchingRef = useRef(false);
   const placeholderImage =
     "https://thvnext.bing.com/th/id/OIP.ZKYGG7ccI7cReRSZOjG2ZgHaE8?w=286&h=191&c=7&r=0&o=7&cb=12&pid=1.7&rm=3";
@@ -93,40 +93,40 @@ export default function ManageActivePollModal({
   };
 
   // Delete poll
-  const handleDeletePoll = async () => {
-    if (!confirm("Are you sure you want to delete this poll? This cannot be undone.")) return;
-    setDeleting(true);
+  // const handleDeletePoll = async () => {
+  //   if (!confirm("Are you sure you want to delete this poll? This cannot be undone.")) return;
+  //   setDeleting(true);
 
-    try {
-      const { data } = await supabase.auth.getSession();
-      const token = data.session?.access_token;
+  //   try {
+  //     const { data } = await supabase.auth.getSession();
+  //     const token = data.session?.access_token;
 
-      const res = await fetch(
-        `https://bnvlaiftxamrudncnygx.supabase.co/functions/v1/edit-poll`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ poll_id: poll.id, action: "delete" }),
-        }
-      );
+  //     const res = await fetch(
+  //       `https://bnvlaiftxamrudncnygx.supabase.co/functions/v1/edit-poll`,
+  //       {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //         body: JSON.stringify({ poll_id: poll.id, action: "delete" }),
+  //       }
+  //     );
 
-      if (!res.ok) {
-        const text = await res.text();
-        throw new Error(`Failed to delete poll: ${res.status} ${text}`);
-      }
+  //     if (!res.ok) {
+  //       const text = await res.text();
+  //       throw new Error(`Failed to delete poll: ${res.status} ${text}`);
+  //     }
 
-      onEndPoll(poll.id);
-      onClose();
-    } catch (err: any) {
-      console.error(err);
-      setErrorMsg(err.message);
-    } finally {
-      setDeleting(false);
-    }
-  };
+  //     onEndPoll(poll.id);
+  //     onClose();
+  //   } catch (err: any) {
+  //     console.error(err);
+  //     setErrorMsg(err.message);
+  //   } finally {
+  //     setDeleting(false);
+  //   }
+  // };
 
   useEffect(() => {
     refreshPoll();
@@ -157,7 +157,7 @@ export default function ManageActivePollModal({
             <XCircle className="w-6 h-6" />
           </button>
     
-          {(loading || ending || deleting) && (
+          {(loading || ending) && (
             <div className="absolute inset-0 flex items-center justify-center bg-white/90 backdrop-blur-sm rounded-3xl z-10">
               <div className="flex flex-col items-center gap-3">
                 <div className="w-12 h-12 border-4 border-rose-200 border-t-rose-600 rounded-full animate-spin"></div>

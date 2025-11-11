@@ -4,7 +4,7 @@ import { useState } from "react";
 import ManageDishModal from "./ManageDishModal";
 import { supabase } from "../../lib/client";
 import { createPortal } from "react-dom";
-import Menu from "../../pages/Menu";
+// import Menu from "../../pages/Menu";
 
 export default function CreatePollModal({
   menu,
