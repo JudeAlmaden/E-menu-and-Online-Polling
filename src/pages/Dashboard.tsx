@@ -80,7 +80,7 @@ export default function Dashboard() {
         <Route
           path="menu"
           element={
-            <MenuManagement menu={menu} onRefreshMenu={fetchMenu} />
+            <MenuManagement menu={menu}/>
           }
         />
         <Route

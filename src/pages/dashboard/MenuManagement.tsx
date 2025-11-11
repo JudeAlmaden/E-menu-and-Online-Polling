@@ -7,10 +7,8 @@ import type { MenuItem } from "../../components/dashboard/types";
 
 export default function MenuManagement({
   menu,
-  onRefreshMenu,
 }: {
   menu: MenuItem[];
-  onRefreshMenu: () => void;
 }) {
   const [localMenu, setLocalMenu] = useState<MenuItem[]>(menu);
   const [selectedFilter, setSelectedFilter] = useState("All");
