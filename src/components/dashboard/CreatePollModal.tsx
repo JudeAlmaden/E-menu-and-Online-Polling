@@ -4,15 +4,18 @@ import { useState } from "react";
 import ManageDishModal from "./ManageDishModal";
 import { supabase } from "../../lib/client";
 import { createPortal } from "react-dom";
+import Menu from "../../pages/Menu";
 
 export default function CreatePollModal({
   menu,
   onSave,
   onClose,
+  onDishAdded
 }: {
   menu: MenuItem[];
   onSave: (poll: Poll) => void;
   onClose: () => void;
+  onDishAdded?: (newDish: MenuItem) => void;
 }) {
   const [localMenu, setLocalMenu] = useState<MenuItem[]>(menu);
   const [selected, setSelected] = useState<MenuItem[]>([]);
@@ -97,6 +100,7 @@ export default function CreatePollModal({
   const handleNewDishSave = (dish: MenuItem) => {
     setLocalMenu((prev) => [...prev, dish]);
     setSelected((prev) => [...prev, dish]);
+    if(onDishAdded)onDishAdded(dish);
     setShowAddDishModal(false);
   };
 
@@ -209,14 +213,15 @@ export default function CreatePollModal({
       {showAddDishModal && (
         <ManageDishModal
           dish={{
-            id: 0,
+            id: Date.now(),
             name: "",
             description: "",
             price: 0,
-            imageUrl: "",
             hasStock: true,
             availableDays: [],
-            alwaysAvailable: true,
+            alwaysAvailable: false,
+            availabilityRange: null,
+            imageUrl: "",
           }}
           days={["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]}
           onSave={handleNewDishSave}

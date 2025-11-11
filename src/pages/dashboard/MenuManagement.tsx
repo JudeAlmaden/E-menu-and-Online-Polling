@@ -7,8 +7,10 @@ import type { MenuItem } from "../../components/dashboard/types";
 
 export default function MenuManagement({
   menu,
+  onMenuChange,
 }: {
   menu: MenuItem[];
+  onMenuChange?: (updatedMenu: MenuItem[]) => void;
 }) {
   const [localMenu, setLocalMenu] = useState<MenuItem[]>(menu);
   const [selectedFilter, setSelectedFilter] = useState("All");
@@ -20,6 +22,11 @@ export default function MenuManagement({
   useEffect(() => {
     setLocalMenu(menu);
   }, [menu]);
+
+  // Notify parent whenever localMenu changes
+  useEffect(() => {
+    if (onMenuChange) onMenuChange(localMenu);
+  }, [localMenu]);
 
   const filteredMenu = localMenu
     .filter((item) => {
@@ -37,10 +44,8 @@ export default function MenuManagement({
     setLocalMenu((prev) => {
       const exists = prev.find((d) => d.id === updated.id);
       if (exists) {
-        // Edit existing
         return prev.map((d) => (d.id === updated.id ? updated : d));
       } else {
-        // Add new
         return [...prev, updated];
       }
     });

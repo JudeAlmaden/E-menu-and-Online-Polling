@@ -99,7 +99,7 @@ export default function MessagesModal({ onClose, msgs, pTotalUnread, onPageChang
               </p>
             </div>
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-xl">
+          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-xl" title="close">
             <X className="w-6 h-6 text-gray-500" />
           </button>
         </div>
@@ -197,7 +197,7 @@ export default function MessagesModal({ onClose, msgs, pTotalUnread, onPageChang
                   <Clock className="w-4 h-4" /> {new Date(selectedMessage.created_at).toLocaleString()}
                 </div>
               </div>
-              <button onClick={() => setSelectedMessage(null)} className="p-2 hover:bg-gray-100 rounded-xl">
+              <button onClick={() => setSelectedMessage(null)} className="p-2 hover:bg-gray-100 rounded-xl" title="close-2">
                 <X className="w-5 h-5 text-gray-500" />
               </button>
             </div>

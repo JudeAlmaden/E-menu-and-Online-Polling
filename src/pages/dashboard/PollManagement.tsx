@@ -17,6 +17,7 @@ export type MenuItem = {
   alwaysAvailable: boolean;
   votes?: number;
   availabilityRange?: { start: string; end: string } | null;
+  
 };
 
 export type Poll = {
@@ -30,7 +31,7 @@ export type Poll = {
   isActive: boolean;
 };
 
-export default function PollManagement({ menu }: { menu: MenuItem[] }) {
+export default function PollManagement({ menu, onMenuUpdate  }: { menu: MenuItem[],   onMenuUpdate?: (updatedMenu: MenuItem[]) => void; }) {
   const [polls, setPolls] = useState<Poll[]>([]);
   const [activePoll, setActivePoll] = useState<Poll | null>(null);
   const [selectedDish, setSelectedDish] = useState<MenuItem | null>(null);
@@ -45,40 +46,11 @@ export default function PollManagement({ menu }: { menu: MenuItem[] }) {
     setLocalMenu(menu); // sync if prop changes
   }, [menu]);
 
+
   const handleCreatePoll = (poll: Poll) => {
     getPolls();
     setActivePoll(poll);
     setShowCreateModal(false);
-  };
-
-  const handleEditDish = (updated: MenuItem) => {
-    setSelectedDish(null);
-
-    // Update polls candidates
-    setPolls((prev) =>
-      prev.map((p) => ({
-        ...p,
-        candidates: p.candidates.map((d) => (d.id === updated.id ? updated : d)),
-      }))
-    );
-
-    // Update local menu
-    setLocalMenu((prev) => prev.map((d) => (d.id === updated.id ? updated : d)));
-  };
-
-  const handleDeleteDish = (deleted: MenuItem) => {
-    setSelectedDish(null);
-
-    // Remove from polls candidates
-    setPolls((prev) =>
-      prev.map((p) => ({
-        ...p,
-        candidates: p.candidates.filter((d) => d.id !== deleted.id),
-      }))
-    );
-
-    // Remove from local menu
-    setLocalMenu((prev) => prev.filter((d) => d.id !== deleted.id));
   };
 
   const getPolls = async () => {
@@ -112,6 +84,14 @@ export default function PollManagement({ menu }: { menu: MenuItem[] }) {
       console.error("Error fetching polls:", err);
     }
   };
+
+  const addNewDish = (dish: MenuItem) => {
+    setLocalMenu((prev) => [...prev, dish]); // add the new dish
+    if (onMenuUpdate) {
+      onMenuUpdate([...localMenu, dish]); // notify parent
+    }
+  };
+
 
   useEffect(() => {
     getPolls();
@@ -276,22 +256,13 @@ export default function PollManagement({ menu }: { menu: MenuItem[] }) {
           )}
         </section>
 
-        {/* Modals */}
-        {selectedDish && (
-          <ManageDishModal
-            dish={selectedDish}
-            days={["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]}
-            onSave={handleEditDish}
-            onDelete={handleDeleteDish}
-            onClose={() => setSelectedDish(null)}
-          />
-        )}
 
         {showCreateModal && (
           <CreatePollModal
             menu={localMenu}  // use localMenu
             onClose={() => setShowCreateModal(false)}
             onSave={handleCreatePoll}
+            onDishAdded={addNewDish}
           />
         )}
 

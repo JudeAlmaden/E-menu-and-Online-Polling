@@ -24,7 +24,7 @@ export default function ManageDishModal({
   const [selectedDays, setSelectedDays] = useState<string[]>(dish.availableDays || []);
   const [startDate, setStartDate] = useState(dish.availabilityRange?.start || "");
   const [endDate, setEndDate] = useState(dish.availabilityRange?.end || "");
-  const [image, setImage] = useState(dish.imageUrl || "");
+  const [image, setImage] = useState(dish.imageUrl || "https://thvnext.bing.com/th/id/OIP.ZKYGG7ccI7cReRSZOjG2ZgHaE8?w=286&h=191&c=7&r=0&o=7&cb=12&pid=1.7&rm=3");
   const [alwaysAvailable, setAlwaysAvailable] = useState(dish.alwaysAvailable ?? true);
   const [isUploading, setIsUploading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -110,8 +110,6 @@ export default function ManageDishModal({
         console.error("Failed to save dish:", json);
         return;
       }
-
-      console.log("Dish saved successfully:", json);
       onSave(updatedDish);
     } catch (err) {
       console.error("Error saving dish:", err);
@@ -236,9 +234,8 @@ export default function ManageDishModal({
                 value={price}
                 onChange={(e) => setPrice(Number(e.target.value))}
                 className="w-full rounded-xl border-2 border-gray-300 pl-10 pr-4 py-3 text-sm text-gray-900 focus:border-rose-500 focus:ring-2 focus:ring-rose-200 transition-all"
-                step="0"
-                min="0"
-                placeholder="0"
+                step="1"
+                placeholder="10"
               />
             </div>
           </div>

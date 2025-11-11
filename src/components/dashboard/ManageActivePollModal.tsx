@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { createPortal } from "react-dom";
 import type { Poll, MenuItem } from "./types";
 import { supabase } from "../../lib/client";
-import { Trophy, XCircle, Trash2 } from "lucide-react";
+import { Trophy, XCircle } from "lucide-react";
 
 export default function ManageActivePollModal({
   poll,
@@ -273,14 +273,14 @@ export default function ManageActivePollModal({
               {ending ? "Ending..." : "End Poll"}
             </button>
 
-            <button
+            {/* <button
               onClick={handleDeletePoll}
               disabled={deleting}
               className="px-6 py-3 text-sm font-semibold text-white bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto flex items-center justify-center gap-2"
             >
               <Trash2 className="w-4 h-4" />
               {deleting ? "Cancelling..." : "Cancel Poll"}
-            </button>
+            </button> */}
           </div>
         </div>
       </div>

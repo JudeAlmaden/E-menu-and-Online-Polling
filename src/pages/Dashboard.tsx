@@ -54,38 +54,37 @@ export default function Dashboard() {
   // Load user and initial menu
   useEffect(() => {
     async function loadUser() {
+      const { data, error } = await supabase.auth.getSession();
+      if (error) console.error("Error getting session:", error);
 
-        const { data, error } = await supabase.auth.getSession();
-        if (error) console.error("Error getting session:", error);
-
-        if (data?.session?.user) {
-          setUser(data.session.user);
-          await fetchMenu();
-          console.log(user);
-        } else {
-          window.location.href = "/login";
-        }
+      if (data?.session?.user) {
+        setUser(data.session.user);
+        await fetchMenu();
+      } else {
+        window.location.href = "/login";
       }
+    }
     loadUser();
   }, []);
+
+  // Callback to update menu from MenuManagement
+  const handleMenuChange = (updatedMenu: MenuItem[]) => {
+    console.log(updatedMenu)
+    setMenu(updatedMenu);
+  };
 
   return (
     <DashboardLayout>
       <Routes>
         <Route index element={<div />} />
-        <Route
-          path="index"
-          element={<PageManagement menu={menu} />}
-        />
+        <Route path="index" element={<PageManagement menu={menu} />} />
         <Route
           path="menu"
-          element={
-            <MenuManagement menu={menu}/>
-          }
+          element={<MenuManagement menu={menu} onMenuChange={handleMenuChange} />}
         />
         <Route
           path="polls"
-          element={<PollManagement menu={menu} />}
+          element={<PollManagement menu={menu} onMenuUpdate={handleMenuChange}/>}
         />
         <Route path="*" element={<PageManagement menu={menu} />} />
       </Routes>
