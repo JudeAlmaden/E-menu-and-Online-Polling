@@ -16,7 +16,7 @@ export default function MenuGrid({
       <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
         {menu.length === 0 ? (
           <div className="col-span-full text-center text-gray-500 py-10 border rounded-xl bg-gray-50">
-            Loading...
+            No dishes found...
           </div>
         ) : (
           menu.map((item) => (
