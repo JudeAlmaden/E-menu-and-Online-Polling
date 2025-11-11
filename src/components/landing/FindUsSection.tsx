@@ -1,5 +1,5 @@
 // import SectionHeader from "./SectionHeader";
-import { MapPin, ExternalLink, Camera } from "lucide-react";
+import { MapPin, ExternalLink } from "lucide-react";
 import { motion } from "framer-motion";
 
 type Props = {
@@ -15,12 +15,12 @@ export default function FindUsSection({
   lng=121.6108,
   address="We are located just in front of St. Anne College Lucena. Come by and give us a visit sometime <3",
   zoom = 16,
-  photos = [
-       "https://images.unsplash.com/photo-1528605248644-14dd04022da1?q=80&w=800&auto=format&fit=crop",
-       "https://images.unsplash.com/photo-1528605248644-14dd04022da1?q=80&w=800&auto=format&fit=crop",
-       "https://images.unsplash.com/photo-1528605248644-14dd04022da1?q=80&w=800&auto=format&fit=crop",
+  // photos = [
+  //      "https://images.unsplash.com/photo-1528605248644-14dd04022da1?q=80&w=800&auto=format&fit=crop",
+  //      "https://images.unsplash.com/photo-1528605248644-14dd04022da1?q=80&w=800&auto=format&fit=crop",
+  //      "https://images.unsplash.com/photo-1528605248644-14dd04022da1?q=80&w=800&auto=format&fit=crop",
 
-      ],
+  //     ],
 }: Props) {
   const mapsUrl = `https://www.google.com/maps?q=${lat},${lng}&z=${zoom}&hl=en`;
   const embedUrl = `${mapsUrl}&output=embed`;

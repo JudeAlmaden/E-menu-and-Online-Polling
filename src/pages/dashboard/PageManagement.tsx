@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import type { MenuItem } from "../../components/dashboard/types";
 import SetRecommendations from "../../components/dashboard/page/setRecommendation";
-import { Star, BarChart3, Users, Eye, ExternalLink, BookOpen, Sparkles, Mail } from "lucide-react";
+import { Star, BarChart3, Eye, ExternalLink, BookOpen, Sparkles, Mail } from "lucide-react";
 import { supabase } from "../../lib/client";
 import MessagesModal from "../../components/dashboard/page/MessagesModal"; // import your modal
 
