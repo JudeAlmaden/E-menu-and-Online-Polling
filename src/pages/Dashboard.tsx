@@ -10,12 +10,14 @@ import type { MenuItem } from "../components/dashboard/types";
 export default function Dashboard() {
   const [user, setUser] = useState<any>(null);
   const [menu, setMenu] = useState<MenuItem[]>([]);
+  const [menuLoading, setMenuLoading] = useState(true);
   const placeholderImage =
     "https://thvnext.bing.com/th/id/OIP.ZKYGG7ccI7cReRSZOjG2ZgHaE8?w=286&h=191&c=7&r=0&o=7&cb=12&pid=1.7&rm=3";
 
   // Fetch menu function (can be reused for refresh)
   const fetchMenu = async () => {
     try {
+      setMenuLoading(true);
       const { data } = await supabase.auth.getSession();
       const token = data.session?.access_token;
       if (!token) return;
@@ -48,6 +50,8 @@ export default function Dashboard() {
       setMenu(transformedMenu);
     } catch (err) {
       console.error("Failed to fetch menu:", err);
+    } finally {
+      setMenuLoading(false);
     }
   };
 
@@ -81,11 +85,11 @@ export default function Dashboard() {
         <Route path="index" element={<PageManagement menu={menu} />} />
         <Route
           path="menu"
-          element={<MenuManagement menu={menu} onMenuChange={handleMenuChange} />}
+          element={<MenuManagement menu={menu} onMenuChange={handleMenuChange} isLoading={menuLoading} />}
         />
         <Route
           path="polls"
-          element={<PollManagement menu={menu} onMenuUpdate={handleMenuChange}/>}
+          element={<PollManagement menu={menu} onMenuUpdate={handleMenuChange} />}
         />
         <Route path="*" element={<PageManagement menu={menu} />} />
       </Routes>

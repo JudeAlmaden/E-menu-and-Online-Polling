@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Loader2 } from "lucide-react";
 import HeroHeader from "../../components/dashboard/HeroHeader";
 import MenuFilter from "../../components/dashboard/MenuFilter";
 import MenuGrid from "../../components/dashboard/MenuGrid";
@@ -8,9 +9,11 @@ import type { MenuItem } from "../../components/dashboard/types";
 export default function MenuManagement({
   menu,
   onMenuChange,
+  isLoading = false,
 }: {
   menu: MenuItem[];
   onMenuChange?: (updatedMenu: MenuItem[]) => void;
+  isLoading?: boolean;
 }) {
   const [localMenu, setLocalMenu] = useState<MenuItem[]>(menu);
   const [selectedFilter, setSelectedFilter] = useState("All");
@@ -57,6 +60,19 @@ export default function MenuManagement({
     setLocalMenu((prev) => prev.filter((d) => d.id !== deleted.id));
     setShowDishModal(null);
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-rose-50 via-pink-50 to-orange-50 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="p-4 bg-white rounded-full shadow-xl">
+            <Loader2 className="w-8 h-8 text-rose-600 animate-spin" />
+          </div>
+          <p className="text-rose-600 font-medium text-lg animate-pulse">Loading menu...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <section className="min-h-screen bg-gradient-to-br from-rose-50 via-pink-50 to-orange-50">

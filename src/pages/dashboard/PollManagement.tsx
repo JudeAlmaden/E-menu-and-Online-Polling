@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { PlusCircle, Trophy, Calendar, TrendingUp, BarChart3, Sparkles } from "lucide-react";
+import { PlusCircle, Trophy, Calendar, TrendingUp, BarChart3, Sparkles, Loader2 } from "lucide-react";
 // import ManageDishModal from "../../components/dashboard/ManageDishModal";
 import CreatePollModal from "../../components/dashboard/CreatePollModal";
 import ManageActivePollModal from "../../components/dashboard/ManageActivePollModal";
@@ -17,7 +17,7 @@ export type MenuItem = {
   alwaysAvailable: boolean;
   votes?: number;
   availabilityRange?: { start: string; end: string } | null;
-  
+
 };
 
 export type Poll = {
@@ -31,13 +31,14 @@ export type Poll = {
   isActive: boolean;
 };
 
-export default function PollManagement({ menu, onMenuUpdate  }: { menu: MenuItem[],   onMenuUpdate?: (updatedMenu: MenuItem[]) => void; }) {
+export default function PollManagement({ menu, onMenuUpdate }: { menu: MenuItem[], onMenuUpdate?: (updatedMenu: MenuItem[]) => void; }) {
   const [polls, setPolls] = useState<Poll[]>([]);
   const [activePoll, setActivePoll] = useState<Poll | null>(null);
   const [selectedDish, setSelectedDish] = useState<MenuItem | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showPollDetails, setShowPollDetails] = useState<Poll | null>(null);
   const [showManagePollModal, setShowManagePollModal] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   // Local menu state for edits/deletes
   const [localMenu, setLocalMenu] = useState<MenuItem[]>(menu);
@@ -55,6 +56,7 @@ export default function PollManagement({ menu, onMenuUpdate  }: { menu: MenuItem
 
   const getPolls = async () => {
     try {
+      setLoading(true);
       const { data, error } = await supabase.auth.getSession();
       if (error) throw error;
       const token = data.session?.access_token;
@@ -82,6 +84,8 @@ export default function PollManagement({ menu, onMenuUpdate  }: { menu: MenuItem
       if (active) setActivePoll(active);
     } catch (err: any) {
       console.error("Error fetching polls:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -97,6 +101,19 @@ export default function PollManagement({ menu, onMenuUpdate  }: { menu: MenuItem
     getPolls();
   }, []);
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-rose-50 via-pink-50 to-orange-50 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="p-4 bg-white rounded-full shadow-xl">
+            <Loader2 className="w-8 h-8 text-rose-600 animate-spin" />
+          </div>
+          <p className="text-rose-600 font-medium text-lg animate-pulse">Loading polls...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-50 via-pink-50 to-orange-50">
       <div className="max-w-7xl mx-auto px-6 py-10 space-y-8">
@@ -111,11 +128,10 @@ export default function PollManagement({ menu, onMenuUpdate  }: { menu: MenuItem
           <button
             onClick={() => setShowCreateModal(true)}
             disabled={!!activePoll}
-            className={`inline-flex items-center gap-2 rounded-2xl px-6 py-4 font-bold text-white shadow-lg transition-all duration-200 ${
-              activePoll
-                ? "bg-gray-400 cursor-not-allowed opacity-60"
-                : "bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-700 hover:to-pink-700 hover:shadow-xl hover:scale-105"
-            }`}
+            className={`inline-flex items-center gap-2 rounded-2xl px-6 py-4 font-bold text-white shadow-lg transition-all duration-200 ${activePoll
+              ? "bg-gray-400 cursor-not-allowed opacity-60"
+              : "bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-700 hover:to-pink-700 hover:shadow-xl hover:scale-105"
+              }`}
           >
             <PlusCircle className="w-6 h-6" />
             Create New Poll
