@@ -135,15 +135,18 @@ export default function CreatePollModal({
               className="border rounded-md px-2 py-1.5 text-sm"
               required
             />
+
             <input
               title="until"
               type="date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
               className="border rounded-md px-2 py-1.5 text-sm"
+              min={startDate}         // 🚀 this makes it the minimum
               required
             />
           </div>
+
 
           {/* Dish selection */}
           <div>
