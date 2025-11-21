@@ -30,6 +30,8 @@ export default function CreatePollModal({
   const [isSaving, setIsSaving] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
+  const today = new Date().toISOString().split("T")[0];
+
   const toggleDish = (dish: MenuItem) => {
     setSelected((prev) =>
       prev.find((d) => d.id === dish.id)
@@ -133,6 +135,7 @@ export default function CreatePollModal({
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
               className="border rounded-md px-2 py-1.5 text-sm"
+              min={today}        
               required
             />
 
@@ -142,7 +145,7 @@ export default function CreatePollModal({
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
               className="border rounded-md px-2 py-1.5 text-sm"
-              min={startDate}         // 🚀 this makes it the minimum
+              min={startDate}         
               required
             />
           </div>
