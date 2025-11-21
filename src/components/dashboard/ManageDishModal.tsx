@@ -31,6 +31,9 @@ export default function ManageDishModal({
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const isSaveDisabled = !name || price <= 0;
+  const today = new Date().toISOString().split("T")[0];
+
+
 
   const toggleDay = (day: string) => {
     setSelectedDays((prev) =>
@@ -331,6 +334,7 @@ export default function ManageDishModal({
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
+                  min={today}
                   className="w-full rounded-xl border-2 border-gray-300 px-4 py-3 text-sm text-gray-900 focus:border-rose-500 focus:ring-2 focus:ring-rose-200 transition-all"
                 />
               </div>
@@ -343,6 +347,7 @@ export default function ManageDishModal({
                   type="date"
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
+                  min={startDate}    
                   className="w-full rounded-xl border-2 border-gray-300 px-4 py-3 text-sm text-gray-900 focus:border-rose-500 focus:ring-2 focus:ring-rose-200 transition-all"
                 />
               </div>
