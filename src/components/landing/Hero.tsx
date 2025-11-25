@@ -6,7 +6,7 @@ export default function Hero() {
       aria-label="Hero"
       style={{
         backgroundImage:
-          "url('https://scontent.fmnl45-1.fna.fbcdn.net/v/t39.30808-6/467636109_122121564572534984_639443777943740619_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=cc71e4&_nc_eui2=AeGJ8_wfPGiApxUHPAuScSCDdpUJqGPzE9Z2lQmoY_MT1tPltEcJRe-te0-mX-DfFrpaqFZ618Qt_R9xiLNoVtCe&_nc_ohc=N_h5uukwwY0Q7kNvwElOZJg&_nc_oc=AdmmKZm_-EtuhMzpGpH6Utys3keem9ygLLRiYU2tOpnoSfsNx5AR7TOZN1npKMDr5_awWU_F0LkPgtMl0LeHVmLo&_nc_zt=23&_nc_ht=scontent.fmnl45-1.fna&_nc_gid=wEnZz-Tw5ENUtesd-IlgDw&oh=00_Afja3vEUBPzqcDJmIqZOSGSWmlzn4loLB_auAA7CKTcHmg&oe=69164D4E')",
+          "url('Banner1.jpg')",
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
