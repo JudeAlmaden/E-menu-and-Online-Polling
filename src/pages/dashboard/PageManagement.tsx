@@ -13,7 +13,14 @@ export type Message = {
   created_at: string;
 };
 
-export default function PageManagement({ menu }: { menu: MenuItem[] }) {
+export default function PageManagement({
+  menu,
+  onMenuUpdate, // new prop
+}: {
+  menu: MenuItem[];
+  onMenuUpdate?: (updatedMenu: MenuItem[]) => void;
+}) {
+
   const [recommendations, setRecommendations] = useState<MenuItem[]>([]);
   const [dishStats, setDishStats] = useState<{ totalDishes: number; activeDishes: number; recommendedDishes: number }>({
     totalDishes: 0,
@@ -125,11 +132,11 @@ export default function PageManagement({ menu }: { menu: MenuItem[] }) {
       }
 
       const data = await res.json();
-      setTotalUnread(data.totalUnread??0)
+      setTotalUnread(data.totalUnread ?? 0)
       setMessages(data.messages)
     } catch (err) {
       console.error("Failed to fetch unread messages:", err);
-    } 
+    }
   };
 
   //Fetching 
@@ -143,10 +150,18 @@ export default function PageManagement({ menu }: { menu: MenuItem[] }) {
     setShowRecommendations(false);
   };
 
-  const handleMessagePageChange=(page:number)=>{
+  const handleMessagePageChange = (page: number) => {
     fetchUnread(page)
   }
 
+  const handleNewDishFromRecommendations = (dish: MenuItem) => {
+    console.log("New dish added from recommendations:", dish);
+
+    // Notify top-level parent (Dashboard)
+    if (onMenuUpdate) {
+      onMenuUpdate([...menu, dish]); // append new dish
+    }
+  };
 
   // Quick action buttons
   const actionButtons = [
@@ -197,7 +212,7 @@ export default function PageManagement({ menu }: { menu: MenuItem[] }) {
     },
   ];
 
-  
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -342,11 +357,18 @@ export default function PageManagement({ menu }: { menu: MenuItem[] }) {
 
       {/* Recommendations Modal */}
       {showRecommendations && (
-        <SetRecommendations menu={menu} onSave={handleSaveRecommendations} onClose={() => setShowRecommendations(false)} />
+        <SetRecommendations
+          menu={menu} // use the prop from Dashboard
+          onSave={handleSaveRecommendations}
+          onClose={() => setShowRecommendations(false)}
+          onNewDish={handleNewDishFromRecommendations} // pass the handler
+        />
       )}
 
+
+
       {/* Messages Modal */}
-      {showMessages && <MessagesModal onClose={() => setShowMessages(false)} pTotalUnread={totalUnread} msgs={messages} onPageChange={handleMessagePageChange}/>}
+      {showMessages && <MessagesModal onClose={() => setShowMessages(false)} pTotalUnread={totalUnread} msgs={messages} onPageChange={handleMessagePageChange} />}
     </div>
   );
 }

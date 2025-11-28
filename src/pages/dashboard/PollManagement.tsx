@@ -228,6 +228,11 @@ export default function PollManagement({ menu, onMenuUpdate }: { menu: MenuItem[
                     ? poll.candidates.reduce((a, b) => (a.votes ?? 0) > (b.votes ?? 0) ? a : b)
                     : null;
 
+                // Access the nested dishes object for image
+                const winnerDish = winner ? (winner as any).dishes || winner : null;
+                const winnerImageUrl = winnerDish?.image_url || winnerDish?.imageUrl || "https://thvnext.bing.com/th/id/OIP.ZKYGG7ccI7cReRSZOjG2ZgHaE8?w=286&h=191&c=7&r=0&o=7&cb=12&pid=1.7&rm=3";
+                const winnerName = winnerDish?.name || winner?.name || "Unknown";
+
                 return (
                   <li
                     key={poll.id}
@@ -247,11 +252,20 @@ export default function PollManagement({ menu, onMenuUpdate }: { menu: MenuItem[
                       </div>
                       {winner && (
                         <div className="pt-4 border-t border-gray-200">
-                          <div className="flex items-center gap-2 text-rose-600 font-semibold text-sm">
-                            <div className="p-1.5 bg-rose-100 rounded-lg"><Trophy className="w-4 h-4" /></div>
+                          <div className="flex items-center gap-3">
+                            <div className="p-1.5 bg-rose-100 rounded-lg">
+                              <Trophy className="w-4 h-4 text-rose-600" />
+                            </div>
                             <div className="flex-1 min-w-0">
                               <p className="text-xs text-gray-500 mb-0.5">Winner</p>
-                              <p className="truncate">{winner.name}</p>
+                              <div className="flex items-center gap-2">
+                                <img
+                                  src={winnerImageUrl}
+                                  alt={winnerName}
+                                  className="w-10 h-10 rounded-lg object-cover border border-gray-200"
+                                />
+                                <p className="truncate text-rose-600 font-semibold text-sm">{winnerName}</p>
+                              </div>
                             </div>
                           </div>
                         </div>

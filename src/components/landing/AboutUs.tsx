@@ -13,8 +13,7 @@ export default function AboutUs() {
           {/* Image */}
           <div className="relative overflow-hidden rounded-3xl shadow-2xl ring-1 ring-rose-900/20">
             <img
-              src="https://foodkudos.com/wp-content/uploads/2024/11/sizzling-pork-sisig-manila-main.jpg"
-              alt="Tres Marias Karinderya"
+              src="th.webp"
               className="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
               loading="lazy"
             />
@@ -34,7 +33,7 @@ export default function AboutUs() {
               — your friendly canteen just around the campus where every meal feels like
               home. Here, we serve freshly cooked Filipino favorites that bring comfort and
               good memories to your college life — from savory adobo and hearty sinigang to other classic dishes
-              you’ll surely love.  
+              you’ll surely love.
               <br /><br />
               Each meal is made with care, using fresh local ingredients and a touch of
               home-style cooking that reminds you of family meals and laughter with

@@ -1,19 +1,20 @@
 import { useState } from "react";
 import type { MenuItem } from "../types";
 import ManageDishModal from "../ManageDishModal";
-import {supabase} from "../../../lib/client"
+import { supabase } from "../../../lib/client";
 
 type Props = {
   menu: MenuItem[];
   onSave: (selected: MenuItem[]) => void;
   onClose: () => void;
+  onNewDish?: (dish: MenuItem) => void;
 };
 
-export default function SetRecommendations({ menu, onSave, onClose }: Props) {
+export default function SetRecommendations({ menu, onSave, onClose, onNewDish }: Props) {
   const [localMenu, setLocalMenu] = useState<MenuItem[]>(menu);
   const [selected, setSelected] = useState<MenuItem[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [visibleCount] = useState(6);
+  const [visibleCount] = useState(50);
   const [showAddDishModal, setShowAddDishModal] = useState(false);
 
   const toggleDish = (dish: MenuItem) => {
@@ -30,44 +31,51 @@ export default function SetRecommendations({ menu, onSave, onClose }: Props) {
 
   const handleNewDishSave = (dish: MenuItem) => {
     setLocalMenu((prev) => [...prev, dish]);
-    setSelected((prev) => [...prev, dish]); // auto-select new dish
+    setSelected((prev) => [...prev, dish]);
     setShowAddDishModal(false);
+
+    if (onNewDish) {
+      onNewDish(dish); // ✅ now will notify parent
+    }
   };
+
 
   const handleSave = async () => {
     if (selected.length === 0) {
       alert("Please select at least one menu item.");
       return;
     }
-  
+
     try {
-      // Get current session
       const { data, error } = await supabase.auth.getSession();
       if (error) throw error;
-  
+
       const token = data.session?.access_token;
+
       if (!token) {
         alert("You must be logged in to save recommendations.");
         return;
       }
-  
-      // Send POST request to save recommendations
-      const res = await fetch("https://bnvlaiftxamrudncnygx.supabase.co/functions/v1/set-recommendations", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          recommendedDishIds: selected.map((d) => d.id),
-        }),
-      });
-  
+
+      const res = await fetch(
+        "https://bnvlaiftxamrudncnygx.supabase.co/functions/v1/set-recommendations",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            recommendedDishIds: selected.map((d) => d.id),
+          }),
+        }
+      );
+
       if (!res.ok) {
         const text = await res.text();
         throw new Error(`Failed to save recommendations: ${text}`);
       }
-  
+
       alert("Recommendations saved successfully!");
       onSave(selected);
       onClose();
@@ -80,7 +88,9 @@ export default function SetRecommendations({ menu, onSave, onClose }: Props) {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/40 p-4 z-50">
       <div className="bg-white rounded-lg w-full max-w-2xl p-5 shadow-lg">
-        <h2 className="text-lg font-semibold text-gray-800 mb-3">Set Recommendations</h2>
+        <h2 className="text-lg font-semibold text-gray-800 mb-3">
+          Set Recommendations
+        </h2>
 
         {/* Search + Add */}
         <div className="flex justify-between items-center mb-3 gap-2">
@@ -89,7 +99,7 @@ export default function SetRecommendations({ menu, onSave, onClose }: Props) {
             placeholder="Search menu..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="flex-1 border rounded-md p-2 text-sm"
+            className="flex-1 border rounded-md p-2 text-sm placeholder-gray-400 text-gray-900"
           />
           <button
             onClick={() => setShowAddDishModal(true)}
@@ -105,15 +115,16 @@ export default function SetRecommendations({ menu, onSave, onClose }: Props) {
             <div
               key={dish.id}
               onClick={() => toggleDish(dish)}
-              className={`relative cursor-pointer rounded-lg overflow-hidden shadow-sm group transition transform hover:scale-[1.02] ${
-                selected.find((d) => d.id === dish.id)
-                  ? "ring-2 ring-rose-500"
-                  : "ring-1 ring-gray-200"
-              }`}
+              className={`relative cursor-pointer rounded-lg overflow-hidden shadow-sm group transition transform hover:scale-[1.02] ${selected.find((d) => d.id === dish.id)
+                ? "ring-2 ring-rose-500"
+                : "ring-1 ring-gray-200"
+                }`}
             >
               <div
                 className="h-28 bg-cover bg-center flex items-end justify-center text-white text-sm font-semibold"
-                style={{ backgroundImage: `url(${dish.imageUrl})` }}
+                style={{
+                  backgroundImage: `url(${dish.imageUrl || ""})`,
+                }}
               >
                 <div className="absolute inset-0 bg-black/40 group-hover:bg-black/25 transition" />
                 <span className="relative z-10 text-center px-2 drop-shadow-sm">
@@ -145,7 +156,7 @@ export default function SetRecommendations({ menu, onSave, onClose }: Props) {
       {showAddDishModal && (
         <ManageDishModal
           dish={{
-            id: 0,
+            id: Date.now(),
             name: "",
             description: "",
             price: 0,

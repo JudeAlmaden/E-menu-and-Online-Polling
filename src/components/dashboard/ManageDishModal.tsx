@@ -53,12 +53,29 @@ export default function ManageDishModal({
   };
 
   const handleSave = async () => {
+    // Validate image if a new file is selected
+    if (selectedFile) {
+      const validImageTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
+      if (!validImageTypes.includes(selectedFile.type)) {
+        alert('Invalid image format!\n\nPlease upload a valid image file (JPEG, PNG, WebP, or GIF).');
+        return;
+      }
+
+      const maxSizeInMB = 5;
+      const maxSizeInBytes = maxSizeInMB * 1024 * 1024;
+      if (selectedFile.size > maxSizeInBytes) {
+        alert(`Image file is too large!\n\nMaximum file size is ${maxSizeInMB}MB.\nYour file is ${(selectedFile.size / 1024 / 1024).toFixed(2)}MB.`);
+        return;
+      }
+    }
+
     setIsUploading(true);
 
     try {
       let uploadedImageUrl = image;
 
       if (selectedFile) {
+        // Delete old image if exists
         if (dish.imageUrl && !dish.imageUrl.includes("data:") && !dish.imageUrl.includes("placeholder")) {
           const oldFilePath = dish.imageUrl.split("/").pop();
           if (oldFilePath) {
@@ -67,12 +84,20 @@ export default function ManageDishModal({
           }
         }
 
+        // Upload new image
         const filePath = `${Date.now()}_${selectedFile.name}`;
         const { error: uploadError } = await supabase.storage.from("images").upload(filePath, selectedFile, { upsert: true });
-        if (uploadError) throw uploadError;
+
+        if (uploadError) {
+          alert(`Image upload failed!\n\nError: ${uploadError.message}\n\nPlease try again or contact support if the issue persists.`);
+          throw uploadError;
+        }
 
         const { data } = supabase.storage.from("images").getPublicUrl(filePath);
-        if (!data.publicUrl) throw new Error("Failed to get public URL");
+        if (!data.publicUrl) {
+          alert('Failed to get image URL!\n\nThe image was uploaded but we couldn\'t retrieve its URL. Please try again.');
+          throw new Error("Failed to get public URL");
+        }
         uploadedImageUrl = data.publicUrl;
       }
 
@@ -88,13 +113,22 @@ export default function ManageDishModal({
         availabilityRange: alwaysAvailable
           ? null
           : startDate && endDate
-          ? { start: startDate, end: endDate }
-          : null,
+            ? { start: startDate, end: endDate }
+            : null,
       };
 
       const { data } = await supabase.auth.getSession();
       const token = data.session?.access_token;
-      if (!token) throw new Error("No user session found");
+      if (!token) {
+        alert('Authentication error!\n\nYour session has expired. Please log in again.');
+        throw new Error("No user session found");
+      }
+
+      // Prepare payload: remove ID if it's temporary (0 or timestamp) so server generates a new one
+      const payload = { ...updatedDish };
+      if (payload.id === 0 || (typeof payload.id === 'number' && payload.id > 2000000000)) {
+        delete (payload as any).id;
+      }
 
       const res = await fetch(
         "https://bnvlaiftxamrudncnygx.supabase.co/functions/v1/dynamic-service",
@@ -104,19 +138,27 @@ export default function ManageDishModal({
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify(updatedDish),
+          body: JSON.stringify(payload),
         }
       );
 
       const json = await res.json();
       if (!res.ok) {
+        const errorMsg = json.error || json.message || 'Unknown error occurred';
+        alert(`Failed to save dish!\n\nError: ${errorMsg}\n\nPlease check your input and try again.`);
         console.error("Failed to save dish:", json);
         return;
       }
-      onSave(updatedDish);
-    } catch (err) {
+
+      // Success! Use the server response which contains the actual dish ID
+      const savedDish = json.dish || { ...updatedDish, id: json.id || updatedDish.id };
+      alert(`Success!\n\n"${name}" has been ${dish.id ? 'updated' : 'added'} successfully!`);
+      onSave(savedDish);
+      onClose();
+    } catch (err: any) {
       console.error("Error saving dish:", err);
-      alert("Failed to save dish. Check console.");
+      const errorMessage = err.message || 'An unexpected error occurred';
+      alert(`Error saving dish!\n\n${errorMessage}\n\nPlease try again or contact support if the issue persists.`);
     } finally {
       setIsUploading(false);
     }
@@ -124,6 +166,14 @@ export default function ManageDishModal({
 
   const handleDelete = async () => {
     if (!confirm("Are you sure you want to delete this dish?")) return;
+
+    // Debug alert
+    // alert(`Debug: dish.id is ${dish.id} (type: ${typeof dish.id})`);
+
+    if (dish.id === undefined || dish.id === null) {
+      alert(`❌ Cannot delete dish: Invalid ID (${dish.id}).`);
+      return;
+    }
 
     setIsDeleting(true);
     try {
@@ -144,17 +194,20 @@ export default function ManageDishModal({
       );
       const json = await res.json();
       if (!res.ok) {
+        const errorMsg = json.error || json.message || 'Unknown error occurred';
         console.error("Failed to delete dish:", json);
-        alert("Failed to delete dish. Check console.");
+        alert(`❌ Failed to delete dish!\n\nError: ${errorMsg}\n\nPlease try again.`);
         return;
       }
 
       console.log("Dish deleted successfully:", json);
+      alert(`✅ Dish deleted successfully!`);
       onDelete?.(dish);
       onClose();
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error deleting dish:", err);
-      alert("Failed to delete dish. Check console.");
+      const errorMessage = err.message || 'An unexpected error occurred';
+      alert(`❌ Error deleting dish!\n\n${errorMessage}\n\nPlease check your connection and try again.`);
     } finally {
       setIsDeleting(false);
     }
@@ -163,7 +216,7 @@ export default function ManageDishModal({
   const isEditing = Boolean(dish && dish.name);
 
   const modalContent = (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
       <div className="w-full max-w-2xl rounded-3xl bg-white p-8 shadow-2xl animate-[slideUp_0.3s_ease-out] max-h-[90vh] overflow-y-auto">
         {isUploading && (
           <div className="absolute inset-0 flex items-center justify-center bg-white/90 backdrop-blur-sm rounded-3xl z-10">
@@ -187,9 +240,9 @@ export default function ManageDishModal({
                 : "Fill in details to add a new dish to your menu."}
             </p>
           </div>
-          <button 
-            onClick={onClose} 
-            className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 p-2 rounded-full transition-all" 
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 p-2 rounded-full transition-all"
             title="Close"
           >
             <XCircle className="w-6 h-6" />
@@ -256,7 +309,7 @@ export default function ManageDishModal({
                 id="image-upload"
                 className="hidden"
               />
-              <label 
+              <label
                 htmlFor="image-upload"
                 className="flex items-center justify-center gap-3 w-full rounded-xl border-2 border-dashed border-gray-300 px-4 py-6 text-sm text-gray-600 hover:border-rose-400 hover:bg-rose-50/30 transition-all cursor-pointer"
               >
@@ -310,11 +363,10 @@ export default function ManageDishModal({
                 <button
                   key={day}
                   onClick={() => toggleDay(day)}
-                  className={`rounded-xl px-4 py-2.5 text-sm font-semibold transition-all ${
-                    selectedDays.includes(day)
-                      ? "bg-gradient-to-r from-rose-500 to-pink-500 text-white shadow-md hover:shadow-lg"
-                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                  }`}
+                  className={`rounded-xl px-4 py-2.5 text-sm font-semibold transition-all ${selectedDays.includes(day)
+                    ? "bg-gradient-to-r from-rose-500 to-pink-500 text-white shadow-md hover:shadow-lg"
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    }`}
                 >
                   {day}
                 </button>
@@ -347,7 +399,7 @@ export default function ManageDishModal({
                   type="date"
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
-                  min={startDate}    
+                  min={startDate}
                   className="w-full rounded-xl border-2 border-gray-300 px-4 py-3 text-sm text-gray-900 focus:border-rose-500 focus:ring-2 focus:ring-rose-200 transition-all"
                 />
               </div>

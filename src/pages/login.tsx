@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { supabase } from "../lib/client";
-import { FaUtensils } from "react-icons/fa6";
+import { FaUtensils, FaEye, FaEyeSlash } from "react-icons/fa6";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -68,14 +69,24 @@ export default function Login() {
             required
           />
 
-          <input
-            type="password"
-            placeholder="Password"
-            className="border border-gray-300 focus:border-rose-400 rounded-lg p-3 w-full text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-rose-200 outline-none"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder="Password"
+              className="border border-gray-300 focus:border-rose-400 rounded-lg p-3 w-full text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-rose-200 outline-none pr-10"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-rose-600 transition-colors"
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? <FaEyeSlash className="text-lg" /> : <FaEye className="text-lg" />}
+            </button>
+          </div>
         </div>
 
         <button

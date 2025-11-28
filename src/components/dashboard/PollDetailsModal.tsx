@@ -134,9 +134,9 @@ export default function PollDetailsModal({
               </span>
             </div>
           </div>
-          <button 
-            onClick={onClose} 
-            className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 p-2 rounded-full transition-all" 
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 p-2 rounded-full transition-all"
             title="Close"
           >
             <XCircle className="w-6 h-6" />
@@ -151,67 +151,70 @@ export default function PollDetailsModal({
               {candidates.length} {candidates.length === 1 ? 'option' : 'options'}
             </span>
           </div>
-          
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {candidates.map((c: MenuItem, index: number) => {
-                const dish = c; // c is already a MenuItem
-                const votes = c.votes ?? 0;
 
-                return (
-                  <button
-                    key={c.id ?? index} // fallback to index if id is undefined
-                    onClick={() => onDishClick(dish)}
-                    disabled={loading}
-                    className="group w-full text-left border-2 border-gray-200 rounded-2xl p-5 hover:border-rose-300 hover:shadow-lg hover:bg-rose-50/30 transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
-                    style={{ animationDelay: `${index * 50}ms` }}
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="flex-shrink-0">
-                        <img 
-                          src={dish.imageUrl || placeholderImage} 
-                          alt={dish.name} 
-                          className="w-20 h-20 object-cover rounded-xl border-2 border-gray-200 shadow-sm group-hover:scale-105 transition-transform duration-300" 
-                        />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {candidates.map((c: any, index: number) => {
+              const dish = c.dishes || c; // Handle nested dishes object if present
+              const votes = c.votes ?? 0;
+              const imageUrl = dish.image_url || dish.imageUrl || placeholderImage;
+              const name = dish.name || "Unknown Dish";
+              const description = dish.description || "";
+
+              return (
+                <button
+                  key={c.id ?? index} // fallback to index if id is undefined
+                  onClick={() => onDishClick(dish)}
+                  disabled={loading}
+                  className="group w-full text-left border-2 border-gray-200 rounded-2xl p-5 hover:border-rose-300 hover:shadow-lg hover:bg-rose-50/30 transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
+                  style={{ animationDelay: `${index * 50}ms` }}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="flex-shrink-0">
+                      <img
+                        src={imageUrl}
+                        alt={name}
+                        className="w-20 h-20 object-cover rounded-xl border-2 border-gray-200 shadow-sm group-hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-2 mb-1">
+                        <span className="font-bold text-gray-900 text-lg">{name}</span>
+                        <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-rose-600 group-hover:translate-x-1 transition-all flex-shrink-0" />
                       </div>
 
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between gap-2 mb-1">
-                          <span className="font-bold text-gray-900 text-lg">{dish.name}</span>
-                          <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-rose-600 group-hover:translate-x-1 transition-all flex-shrink-0" />
-                        </div>
+                      {description && (
+                        <p className="text-sm text-gray-600 mb-2 line-clamp-2">{description}</p>
+                      )}
 
-                        {dish.description && (
-                          <p className="text-sm text-gray-600 mb-2 line-clamp-2">{dish.description}</p>
-                        )}
-
-                        <div className="flex items-center gap-2">
-                          <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs font-semibold rounded-full">
-                            {votes} {votes === 1 ? 'vote' : 'votes'}
-                          </span>
-                        </div>
+                      <div className="flex items-center gap-2">
+                        <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs font-semibold rounded-full">
+                          {votes} {votes === 1 ? 'vote' : 'votes'}
+                        </span>
                       </div>
                     </div>
-                  </button>
-                );
-              })}
+                  </div>
+                </button>
+              );
+            })}
           </div>
         </div>
 
         {/* Footer */}
         <div className="flex justify-end mt-8 pt-6 border-t border-gray-200 gap-2">
           <button
-              onClick={handleDeletePoll}
-              disabled={deleting}
-              className="px-6 py-3 text-sm font-semibold text-white bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto flex items-center justify-center gap-2"
-            >
-              <Trash2 className="w-4 h-4" />
-              {deleting ? "Deleting..." : "Delete"}
-            </button>
-            <button
-              onClick={onClose}
-              className="px-6 py-3 text-sm font-semibold text-white bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-700 hover:to-pink-700 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md"
-            >
-              Close
+            onClick={handleDeletePoll}
+            disabled={deleting}
+            className="px-6 py-3 text-sm font-semibold text-white bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto flex items-center justify-center gap-2"
+          >
+            <Trash2 className="w-4 h-4" />
+            {deleting ? "Deleting..." : "Delete"}
+          </button>
+          <button
+            onClick={onClose}
+            className="px-6 py-3 text-sm font-semibold text-white bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-700 hover:to-pink-700 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md"
+          >
+            Close
           </button>
         </div>
       </div>

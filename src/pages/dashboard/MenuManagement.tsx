@@ -10,10 +10,12 @@ export default function MenuManagement({
   menu,
   onMenuChange,
   isLoading = false,
+  onRefetch,
 }: {
   menu: MenuItem[];
   onMenuChange?: (updatedMenu: MenuItem[]) => void;
   isLoading?: boolean;
+  onRefetch?: () => Promise<void>;
 }) {
   const [localMenu, setLocalMenu] = useState<MenuItem[]>(menu);
   const [selectedFilter, setSelectedFilter] = useState("All");
@@ -43,7 +45,9 @@ export default function MenuManagement({
     );
 
   // Handler when saving or editing a dish
-  const handleSaveDish = (updated: MenuItem) => {
+  const handleSaveDish = async (updated: MenuItem) => {
+    const isNewDish = !localMenu.find((d) => d.id === updated.id);
+
     setLocalMenu((prev) => {
       const exists = prev.find((d) => d.id === updated.id);
       if (exists) {
@@ -53,6 +57,11 @@ export default function MenuManagement({
       }
     });
     setShowDishModal(null);
+
+    // Refetch menu from server if a new dish was added
+    if (isNewDish && onRefetch) {
+      await onRefetch();
+    }
   };
 
   // Handler when deleting a dish

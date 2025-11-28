@@ -45,7 +45,7 @@ export default function Dashboard() {
         alwaysAvailable: item.alwaysAvailable || false,
         availabilityRange: item.availabilityRange || null,
         imageUrl: item.image_url || placeholderImage,
-      }));
+      })).filter((item: MenuItem) => item.id !== undefined && item.id !== null);
 
       setMenu(transformedMenu);
     } catch (err) {
@@ -81,11 +81,19 @@ export default function Dashboard() {
   return (
     <DashboardLayout>
       <Routes>
-        <Route index element={<div />} />
-        <Route path="index" element={<PageManagement menu={menu} />} />
+        <Route
+          path="index"
+          element={
+            <PageManagement
+              menu={menu}
+              onMenuUpdate={handleMenuChange} // new prop
+            />
+          }
+        />
+        <Route path="*" element={<PageManagement menu={menu} onMenuUpdate={handleMenuChange} />} />
         <Route
           path="menu"
-          element={<MenuManagement menu={menu} onMenuChange={handleMenuChange} isLoading={menuLoading} />}
+          element={<MenuManagement menu={menu} onMenuChange={handleMenuChange} isLoading={menuLoading} onRefetch={fetchMenu} />}
         />
         <Route
           path="polls"

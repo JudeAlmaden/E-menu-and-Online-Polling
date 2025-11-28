@@ -94,8 +94,8 @@ export default function ActivePoll() {
   const buttonLabel = isSameAsPrevious
     ? "Vote"
     : hasVoted
-    ? "Change Vote"
-    : "Submit Vote";
+      ? "Change Vote"
+      : "Submit Vote";
 
   const submitVote = async () => {
     if (choice === null) return alert("Please select a dish first!");
@@ -103,7 +103,7 @@ export default function ActivePoll() {
     if (!poll) return;
 
 
-    console.log(poll.id+" "+deviceId+" "+choice)
+    console.log(poll.id + " " + deviceId + " " + choice)
 
     try {
       const res = await fetch(
@@ -140,7 +140,7 @@ export default function ActivePoll() {
   };
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-10">
+    <div id="vote" className="mx-auto max-w-6xl px-4 py-10">
       <h2 className="mb-6 text-center text-3xl font-bold text-gray-900">
         {poll.name}
       </h2>
@@ -156,9 +156,8 @@ export default function ActivePoll() {
           return (
             <div
               key={c.id}
-              className={`w-80 bg-white flex flex-col overflow-hidden rounded-2xl border shadow-md transition hover:shadow-lg ${
-                choice === c.id ? "ring-2 ring-rose-500" : ""
-              }`}
+              className={`w-80 bg-white flex flex-col overflow-hidden rounded-2xl border shadow-md transition hover:shadow-lg ${choice === c.id ? "ring-2 ring-rose-500" : ""
+                }`}
             >
               <img
                 src={c.imageUrl || placeholderImage}
@@ -198,8 +197,8 @@ export default function ActivePoll() {
                   {isUserVote
                     ? "Your current vote"
                     : choice === c.id
-                    ? "Selected"
-                    : "Choose this menu"}
+                      ? "Selected"
+                      : "Choose this menu"}
                 </label>
               </div>
             </div>
@@ -211,11 +210,10 @@ export default function ActivePoll() {
         <button
           onClick={submitVote}
           disabled={isSameAsPrevious}
-          className={`rounded-xl px-6 py-3 font-semibold shadow-md transition ${
-            isSameAsPrevious
+          className={`rounded-xl px-6 py-3 font-semibold shadow-md transition ${isSameAsPrevious
               ? "bg-gray-300 text-gray-600 cursor-not-allowed"
               : "bg-gradient-to-r from-rose-500 to-orange-400 text-white hover:opacity-90"
-          }`}
+            }`}
         >
           {buttonLabel}
         </button>
