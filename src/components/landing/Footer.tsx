@@ -51,7 +51,7 @@ export default function Footer() {
               <li><a className="hover:text-white transition" href="#menu">Menu</a></li>
               <li><a className="hover:text-white transition" href="#vote">Vote</a></li>
               <li><a className="hover:text-white transition" href="#find-us">Find us</a></li>
-              <li><a className="hover:text-white transition" href="#">Testimonials</a></li>
+              <li><a className="hover:text-white transition" href="#testimonials">Testimonials</a></li>
             </ul>
           </div>
         </div>
